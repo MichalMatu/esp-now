@@ -1,4 +1,5 @@
-// MAC: C8:F0:9E:9C:43:68
+// MAC: C8:F0:9E:9C:43:68 - sender
+// MAC: E0:5A:1B:A1:9B:00 - receiver
 
 /*
   Rui Santos
@@ -15,7 +16,7 @@
 #include <WiFi.h>
 
 // REPLACE WITH YOUR RECEIVER MAC Address
-uint8_t broadcastAddress[] = {0xC8, 0xF0, 0x9E, 0x9C, 0x43, 0x68};
+uint8_t broadcastAddress[] = {0xE0, 0x5A, 0x1B, 0xA1, 0x9B, 0x00};
 
 // Structure example to send data
 // Must match the receiver structure
