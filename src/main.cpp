@@ -69,10 +69,8 @@ void setup()
   // Init Serial Monitor
   Serial.begin(115200);
 
-  // Set device as a Wi-Fi Station
-  // WiFi.mode(WIFI_STA);
-
-  // Configure ESP32 as an access point
+  // Set device as a Wi-Fi Station and Access Point
+  WiFi.mode(WIFI_AP_STA);
   WiFi.softAP(ssid, password);
 
   // Init spiffs for web server
@@ -89,10 +87,7 @@ void setup()
     return;
   }
 
-  
-
-  // Once ESPNow is successfully Init, we will register for Send CB to
-  // get the status of Trasnmitted packet
+  // Once ESPNow is successfully initialized, register for Send CB to get the status of transmitted packets
   esp_now_register_send_cb(OnDataSent);
 
   // Register peer
