@@ -1,16 +1,6 @@
 // MAC: C8:F0:9E:9C:43:68 - sender
 // MAC: E0:5A:1B:A1:9B:00 - receiver
-
-/*
-  Rui Santos
-  Complete project details at https://RandomNerdTutorials.com/esp-now-esp32-arduino-ide/
-
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files.
-
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
-*/
+// SENDER CODE
 
 #include <esp_now.h>
 #include <WiFi.h>
