@@ -71,6 +71,27 @@ void handleCredentialsRequest(AsyncWebServerRequest *request)
   request->send(200, "text/plain", credentials);
 }
 
+String convertMacToShortCode(const String &mac)
+{
+  const String characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()";
+  String shortCode = "";
+
+  // Remove ':' characters from MAC address
+  String cleanedMac = mac;
+  cleanedMac.replace(":", "");
+
+  // Convert MAC address to a short code
+  for (int i = 0; i < 6; i++)
+  {
+    String pair = cleanedMac.substring(i * 2, i * 2 + 2);            // Extract each pair of MAC address numbers
+    int decimalValue = strtoul(pair.c_str(), nullptr, 16);           // Convert the pair from hexadecimal to decimal
+    char character = characters[decimalValue % characters.length()]; // Get the corresponding character from the character set
+    shortCode += character;                                          // Append the character to the short code
+  }
+
+  return shortCode;
+}
+
 void setup()
 {
   // Init Serial Monitor
@@ -120,6 +141,16 @@ void setup()
 
   // Start the server
   server.begin();
+
+    // Get the MAC address
+  String macAddress = WiFi.macAddress();
+
+  // Convert MAC address to a short code
+  String shortCode = convertMacToShortCode(macAddress);
+
+  // Display the short code in the Serial Monitor
+  Serial.print("Short Code: ");
+  Serial.println(shortCode);
 }
 
 void loop()
