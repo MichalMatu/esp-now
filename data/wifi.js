@@ -5,7 +5,7 @@ function getCredentials() {
   fetch("/credentials")
     .then((response) => response.text()) // Read the response as plain text
     .then((data) => {
-      const [ssid, password, macAddress] = data.split("\n"); // Split the response by newlines
+      const [ssid, password, fetchedMacAddress] = data.split("\n"); // Split the response by newlines
       document.getElementById("ssidValue").innerText = ssid.replace(
         "SSID: ",
         ""
@@ -14,10 +14,9 @@ function getCredentials() {
         "Password: ",
         ""
       ); // Update the password element
-      document.getElementById("macAddressValue").innerText = macAddress.replace(
-        "MAC Address: ",
-        ""
-      ); // Update the MAC address element
+      document.getElementById("macAddressValue").innerText =
+        fetchedMacAddress.replace("MAC Address: ", ""); // Update the MAC address element
+      macAddress = fetchedMacAddress.replace("MAC Address: ", ""); // Assign the fetched MAC address to the global variable
     })
     .catch((error) => console.error("Error:", error));
 }
