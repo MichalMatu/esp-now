@@ -65,11 +65,6 @@ void handleSaveCredentialsRequest(AsyncWebServerRequest *request)
   }
 }
 
-void handleCredentialsRequest(AsyncWebServerRequest *request)
-{
-  String credentials = "SSID: " + String(ssid) + "\nPassword: " + String(password) + "\nMAC Address: " + WiFi.macAddress();
-  request->send(200, "text/plain", credentials);
-}
 
 String convertMacToShortCode(const String &mac)
 {
@@ -90,6 +85,12 @@ String convertMacToShortCode(const String &mac)
   }
 
   return shortCode;
+}
+
+void handleCredentialsRequest(AsyncWebServerRequest *request)
+{
+  String credentials = "SSID: " + String(ssid) + "\nPassword: " + String(password) + "\nMAC Address: " + WiFi.macAddress() + "\nShort Code: " + convertMacToShortCode(WiFi.macAddress());
+  request->send(200, "text/plain", credentials);
 }
 
 void setup()
@@ -142,7 +143,7 @@ void setup()
   // Start the server
   server.begin();
 
-    // Get the MAC address
+  // Get the MAC address
   String macAddress = WiFi.macAddress();
 
   // Convert MAC address to a short code
