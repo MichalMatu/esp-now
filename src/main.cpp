@@ -142,16 +142,6 @@ void setup()
 
   // Start the server
   server.begin();
-
-  // Get the MAC address
-  String macAddress = WiFi.macAddress();
-
-  // Convert MAC address to a short code
-  String shortCode = convertMacToShortCode(macAddress);
-
-  // Display the short code in the Serial Monitor
-  Serial.print("Short Code: ");
-  Serial.println(shortCode);
 }
 
 void loop()
