@@ -57,11 +57,18 @@ void handleSaveCredentialsRequest(AsyncWebServerRequest *request)
     WiFi.softAPdisconnect();
     // Configure ESP32 as an access point with new credentials
     WiFi.softAP(ssid, password);
+    delay(1000);
   }
   else
   {
     request->send(SPIFFS, "/invalid-credentials.html", "text/html");
   }
+}
+
+void handleCredentialsRequest(AsyncWebServerRequest *request)
+{
+  String credentials = "SSID: " + String(ssid) + "\nPassword: " + String(password);
+  request->send(200, "text/plain", credentials);
 }
 
 void setup()
@@ -107,6 +114,9 @@ void setup()
 
   // server.serveStatic("/favicon.ico", SPIFFS, "/favicon.ico");
   server.on("/save-credentials", HTTP_POST, handleSaveCredentialsRequest);
+
+  // Add a new endpoint for retrieving credentials
+  server.on("/credentials", HTTP_GET, handleCredentialsRequest);
 
   // Start the server
   server.begin();
