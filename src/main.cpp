@@ -1,6 +1,6 @@
 // MAC: C8:F0:9E:9C:43:68 - sender
 // MAC: E0:5A:1B:A1:9B:00 - receiver
-// SENDER CODE - SENSOR SIDE
+// SENDER CODE - SENSOR SIDE§
 
 #include <esp_now.h>
 #include <WiFi.h>
