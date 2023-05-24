@@ -65,9 +65,11 @@ void handleSaveCredentialsRequest(AsyncWebServerRequest *request)
   }
 }
 
+#include <WiFi.h>
+
 void handleCredentialsRequest(AsyncWebServerRequest *request)
 {
-  String credentials = "SSID: " + String(ssid) + "\nPassword: " + String(password);
+  String credentials = "SSID: " + String(ssid) + "\nPassword: " + String(password) + "\nMAC Address: " + WiFi.macAddress();
   request->send(200, "text/plain", credentials);
 }
 
