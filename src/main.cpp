@@ -65,7 +65,6 @@ void handleSaveCredentialsRequest(AsyncWebServerRequest *request)
   }
 }
 
-
 String convertMacToShortCode(const String &mac)
 {
   const String characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()";
@@ -85,6 +84,31 @@ String convertMacToShortCode(const String &mac)
   }
 
   return shortCode;
+}
+
+String retrieveMacFromShortCode(const String &shortCode)
+{
+  const String characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()";
+  String macAddress = "";
+
+  for (size_t i = 0; i < shortCode.length(); i++)
+  {
+    char c = shortCode.charAt(i);
+    size_t index = characters.indexOf(c);
+
+    if (index != -1)
+    {
+      macAddress += String(index, HEX);
+    }
+  }
+
+  // Insert ':' characters to format the MAC address
+  for (size_t i = 2; i < macAddress.length(); i += 3)
+  {
+    macAddress = macAddress.substring(0, i) + ":" + macAddress.substring(i);
+  }
+
+  return macAddress;
 }
 
 void handleCredentialsRequest(AsyncWebServerRequest *request)
@@ -142,6 +166,22 @@ void setup()
 
   // Start the server
   server.begin();
+
+  // Get the MAC address
+  String macAddress = WiFi.macAddress();
+  // Display the MAC address
+  Serial.print("MAC Address: ");
+  Serial.println(macAddress);
+  // Convert MAC address to a short code
+  String shortCode = convertMacToShortCode(macAddress);
+  // Display the short code in the Serial Monitor
+  Serial.print("Short Code: ");
+  Serial.println(shortCode);
+  // Retrieve MAC address from short code
+  String retrievedMac = retrieveMacFromShortCode(shortCode);
+  // Display the retrieved MAC address
+  Serial.print("Retrieved MAC: ");
+  Serial.println(retrievedMac);
 }
 
 void loop()
