@@ -98,6 +98,17 @@ void handleCredentialsRequest(AsyncWebServerRequest *request)
 void disableWiFi(AsyncWebServerRequest *request)
 {
   WiFi.mode(WIFI_MODE_NULL); // Disable Wi-Fi station mode
+  WiFi.mode(WIFI_STA);
+  // Init ESP-NOW
+  esp_now_init();
+  // Once ESPNow is successfully initialized, register for Send CB to get the status of transmitted packets
+  esp_now_register_send_cb(OnDataSent);
+  // Register peer
+  memcpy(peerInfo.peer_addr, broadcastAddress, 6);
+  peerInfo.channel = 0;
+  peerInfo.encrypt = false;
+  // Add peer
+  esp_now_add_peer(&peerInfo);
   isWiFiEnabled = false;
   request->send(200, "text/plain", "Wi-Fi station mode disabled");
 }
