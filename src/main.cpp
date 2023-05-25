@@ -18,6 +18,9 @@ uint8_t broadcastAddress[] = {0xE0, 0x5A, 0x1B, 0xA1, 0x9B, 0x00};
 char ssid[32] = "ESP32AP";
 char password[64] = "0123456789";
 
+// Add a boolean flag to control Wi-Fi state
+bool isWiFiEnabled = true; // Set to true by default
+
 // Structure example to send data
 // Must match the receiver structure
 typedef struct struct_message
@@ -86,35 +89,17 @@ String convertMacToShortCode(const String &mac)
   return shortCode;
 }
 
-String retrieveMacFromShortCode(const String &shortCode)
-{
-  const String characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()";
-  String macAddress = "";
-
-  for (size_t i = 0; i < shortCode.length(); i++)
-  {
-    char c = shortCode.charAt(i);
-    size_t index = characters.indexOf(c);
-
-    if (index != -1)
-    {
-      macAddress += String(index, HEX);
-    }
-  }
-
-  // Insert ':' characters to format the MAC address
-  for (size_t i = 2; i < macAddress.length(); i += 3)
-  {
-    macAddress = macAddress.substring(0, i) + ":" + macAddress.substring(i);
-  }
-
-  return macAddress;
-}
-
 void handleCredentialsRequest(AsyncWebServerRequest *request)
 {
   String credentials = "SSID: " + String(ssid) + "\nPassword: " + String(password) + "\nMAC Address: " + WiFi.macAddress() + "\nShort Code: " + convertMacToShortCode(WiFi.macAddress());
   request->send(200, "text/plain", credentials);
+}
+
+void disableWiFi(AsyncWebServerRequest *request)
+{
+  WiFi.mode(WIFI_MODE_NULL); // Disable Wi-Fi station mode
+  isWiFiEnabled = false;
+  request->send(200, "text/plain", "Wi-Fi station mode disabled");
 }
 
 void setup()
@@ -122,9 +107,12 @@ void setup()
   // Init Serial Monitor
   Serial.begin(115200);
 
-  // Set device as a Wi-Fi Station and Access Point
-  WiFi.mode(WIFI_AP_STA);
-  WiFi.softAP(ssid, password);
+  // Set device as a Wi-Fi Station and Access Point if Wi-Fi is enabled
+  if (isWiFiEnabled)
+  {
+    WiFi.mode(WIFI_AP_STA);
+    WiFi.softAP(ssid, password);
+  }
 
   // Init spiffs for web server
   if (!SPIFFS.begin())
@@ -164,24 +152,11 @@ void setup()
   // Add a new endpoint for retrieving credentials
   server.on("/credentials", HTTP_GET, handleCredentialsRequest);
 
+  // Add a new endpoint to disable Wi-Fi
+  server.on("/wifi-off", HTTP_GET, disableWiFi);
+
   // Start the server
   server.begin();
-
-  // Get the MAC address
-  String macAddress = WiFi.macAddress();
-  // Display the MAC address
-  Serial.print("MAC Address: ");
-  Serial.println(macAddress);
-  // Convert MAC address to a short code
-  String shortCode = convertMacToShortCode(macAddress);
-  // Display the short code in the Serial Monitor
-  Serial.print("Short Code: ");
-  Serial.println(shortCode);
-  // Retrieve MAC address from short code
-  String retrievedMac = retrieveMacFromShortCode(shortCode);
-  // Display the retrieved MAC address
-  Serial.print("Retrieved MAC: ");
-  Serial.println(retrievedMac);
 }
 
 void loop()
@@ -190,7 +165,7 @@ void loop()
   strcpy(myData.a, "THIS IS A CHAR");
   myData.b = random(1, 20);
   myData.c = 1.2;
-  myData.d = false;
+  myData.d = isWiFiEnabled;
 
   // Send message via ESP-NOW
   esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *)&myData, sizeof(myData));
