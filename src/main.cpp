@@ -97,6 +97,8 @@ void handleCredentialsRequest(AsyncWebServerRequest *request)
 
 void disableWiFi(AsyncWebServerRequest *request)
 {
+  request->send(204);
+
   WiFi.mode(WIFI_MODE_NULL); // Disable Wi-Fi station mode
   WiFi.mode(WIFI_STA);
   // Init ESP-NOW
@@ -110,7 +112,6 @@ void disableWiFi(AsyncWebServerRequest *request)
   // Add peer
   esp_now_add_peer(&peerInfo);
   isWiFiEnabled = false;
-  request->send(200, "text/plain", "Wi-Fi station mode disabled");
 }
 
 void setup()
@@ -118,12 +119,8 @@ void setup()
   // Init Serial Monitor
   Serial.begin(115200);
 
-  // Set device as a Wi-Fi Station and Access Point if Wi-Fi is enabled
-  if (isWiFiEnabled)
-  {
-    WiFi.mode(WIFI_AP_STA);
-    WiFi.softAP(ssid, password);
-  }
+  WiFi.mode(WIFI_AP_STA);
+  WiFi.softAP(ssid, password);
 
   // Init spiffs for web server
   if (!SPIFFS.begin())
